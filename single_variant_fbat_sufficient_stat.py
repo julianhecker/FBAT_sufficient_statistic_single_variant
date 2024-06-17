@@ -33,7 +33,6 @@ def mendelian_prob(f, m, offspring):
     probs[2, 2, 2] = 1.0
 
 
-
     conf = [0, 0, 0]
     for geno in offspring:
         conf[geno] = conf[geno] + 1
@@ -48,18 +47,17 @@ def mendelian_prob(f, m, offspring):
 
 
 def enumerate_configurations(n, k):
-    # Generate all possible combinations of non-negative integers that sum up to n
+
     return [combo for combo in itertools.combinations_with_replacement(range(k), n)]
 
 
-# Convert combination to genotype counts
 def combo_to_genotypes(combo, k):
     counts = [0] * k
     for item in combo:
         counts[item] += 1
     return counts
 
-
+genotypes = [0, 1, 2]
 
 
 class sufficient_statistic_single_variant:
@@ -70,7 +68,7 @@ class sufficient_statistic_single_variant:
         self.mother = mother_genotype
         self.offspring_genotypes = offspring_genotypes
 
-        self.genotypes = [0, 1, 2]
+
         self.matrix = None
         self.number_of_configs = 0
 
@@ -80,7 +78,9 @@ class sufficient_statistic_single_variant:
     def get_sufficient_stat(self):
 
         self.compute_matrix()
-        self.identify_suff_stat()
+        geno_configs, probabilities = self.identify_suff_stat()
+
+        return geno_configs, probabilities
 
     def compute_matrix(self):
 
@@ -135,118 +135,6 @@ class sufficient_statistic_single_variant:
         geno_configs = [self.offspring_genotype_configs[i] for i in torch.nonzero(geno_configs_suff_stat)]
 
         return geno_configs, probabilities
-
-
-
-# pedigree CU0070F , nuclear family [A-CUHS-CU002788 x A-CUHS-CU002789]
-# observed genotype configuration
-# father         = 0
-#                  0
-# mother         = 0
-#                  0
-# offspring 1    = 1
-#                  1
-# offspring 2    = 1
-#                  1
-# offspring 3    = 1
-#                  1
-# offspring 4    = 1
-#                  1
-# offspring 5    = 1
-#                  1
-# offspring 6    = 2
-#                  2
-# offspring 7    = 1
-#                  1
-#
-# compatible mating haplotype 1
-# h2   :   1
-# h1   :   2
-#
-# h2   :   1
-# h1   :   2
-#
-# There are 3 compatible offspring genotypes:
-#
-# compatible offspring genotype 1 (g1) = 1/1
-#
-# compatible offspring genotype 2 (g2) = 1/2
-#
-# compatible offspring genotype 3 (g3) = 2/2
-#
-# distribution of compatible offspring genotype configurations:
-#
-# #g1     #g2     #g3     P[G]
-# 5       1       1       0.007
-# 4       2       1       0.035
-# 4       1       2       0.017
-# 3       3       1       0.092
-# 3       2       2       0.069
-# 3       1       3       0.023
-# 2       4       1       0.138
-# 2       3       2       0.138
-# 2       2       3       0.069
-# 2       1       4       0.017
-# 1       5       1       0.111
-# 1       4       2       0.138
-# 1       3       3       0.092
-# 1       2       4       0.035
-# 1       1       5       0.007
-# 6       0       1       0.001
-# 5       0       2       0.002
-# 4       0       3       0.003
-# 3       0       4       0.003
-# 2       0       5       0.002
-# 1       0       6       0.001
-
-
-ss = sufficient_statistic_single_variant(None, None, [6, 0, 1])
-ss.compute_matrix()
-g, p=ss.identify_suff_stat()
-
-# pedigree CU0049F , nuclear family [A-CUHS-CU002159 x A-CUHS-CU002125]
-# observed genotype configuration
-# father         = 2
-#                  2
-# mother         = 2
-#                  1
-# offspring 1    = 2
-#                  1
-# offspring 2    = 2
-#                  1
-#
-# compatible mating haplotype 1
-# h1   :   2
-# h1   :   2
-#
-# h1   :   2
-# h2   :   1
-#
-# There are 2 compatible offspring genotypes:
-#
-# compatible offspring genotype 1 (g1) = 2/2
-#
-# compatible offspring genotype 2 (g2) = 2/1
-#
-# distribution of compatible offspring genotype configurations:
-#
-# #g1     #g2     P[G]
-# 1       1       0.500
-# 2       0       0.250
-# 0       2       0.250
-
-ss = sufficient_statistic_single_variant(2, 1, [0, 2, 0])
-ss.compute_matrix()
-g, p=ss.identify_suff_stat()
-
-
-
-
-ss = sufficient_statistic_single_variant(None, None, [1, 1, 1])
-ss.compute_matrix()
-g, p=ss.identify_suff_stat()
-
-
 
 
 
